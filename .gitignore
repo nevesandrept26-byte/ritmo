@@ -1,0 +1,27 @@
+# Segredos e configuração local
+.env
+.env.*
+!.env.example
+
+# Dependências e logs
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+*.log
+
+# Ficheiros do sistema e editores
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Dados pessoais e backups locais — nunca publicar no repositório
+backups/
+*.backup.json
+ritmo-backup-*.json
+*.local-data
+
+# Temporários
+.tmp/
+.cache/

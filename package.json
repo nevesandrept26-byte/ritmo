@@ -1,0 +1,13 @@
+{
+  "name": "ritmo-personal-dashboard",
+  "version": "4.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server/server.mjs",
+    "check": "node scripts/check-project.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

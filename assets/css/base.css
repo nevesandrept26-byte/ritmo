@@ -1,0 +1,29 @@
+/* Reset, tipografia e elementos HTML — RITMO */
+
+*{box-sizing:border-box}
+
+html{scroll-behavior:smooth}
+
+body{margin:0;background:radial-gradient(ellipse at 80% -15%,#253528 0,transparent 36%),var(--bg);color:var(--text);font:14px/1.5 "DM Sans",system-ui,sans-serif;min-height:100vh}
+
+button,input,select,textarea{font:inherit}
+
+button{cursor:pointer}
+
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--lime);outline-offset:2px}
+
+a{color:inherit}
+
+label{display:block;color:#c7d2c4;font-size:12px;font-weight:600;margin-bottom:6px}
+
+input,select,textarea{width:100%;background:#101811;border:1px solid #344236;border-radius:10px;color:var(--text);padding:11px 12px;outline:none;min-width:0}
+
+input::placeholder,textarea::placeholder{color:#6f7c6e}
+
+input:focus,select:focus,textarea:focus{border-color:#9acb5d;box-shadow:0 0 0 3px #c2f97012}
+
+input[type=checkbox]{width:16px;height:16px;accent-color:var(--lime);vertical-align:middle}
+
+textarea{min-height:93px;resize:vertical}
+
+select option{background:#172018}
