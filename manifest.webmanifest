@@ -1,5 +1,5 @@
 {
-  "name": "RITMO 4.0.1 — O teu espaço pessoal",
+  "name": "RITMO 4.1.1 — O teu espaço pessoal",
   "short_name": "RITMO",
   "description": "Acompanha a tua fé, saúde, disciplina e evolução pessoal.",
   "lang": "pt-PT",
@@ -9,6 +9,11 @@
   "background_color": "#0e120f",
   "theme_color": "#101410",
   "icons": [
-    {"src": "assets/icons/ritmo.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+    {
+      "src": "assets/icons/ritmo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
   ]
 }

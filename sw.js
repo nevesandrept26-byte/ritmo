@@ -1,14 +1,14 @@
 /* RITMO · Service worker: cache dos ficheiros locais para utilização offline. */
-const CACHE_NAME = 'ritmo-shell-v14';
+const CACHE_NAME = 'ritmo-shell-v17';
 const APP_FILES = [
   './', './index.html', './manifest.webmanifest', './sw.js', './install-qwen3.5-4b.bat',
   './assets/icons/ritmo.svg',
   './assets/css/variables.css', './assets/css/base.css', './assets/css/layout.css',
-  './assets/css/components.css', './assets/css/responsive.css', './assets/css/gym.css', './assets/css/library-reader.css', './assets/css/nutrition.css', './assets/css/gamification.css', './assets/css/planner-recovery.css', './assets/css/suite.css',
+  './assets/css/components.css', './assets/css/responsive.css', './assets/css/gym.css', './assets/css/library-reader.css', './assets/css/nutrition.css', './assets/css/gamification.css', './assets/css/planner-recovery.css', './assets/css/suite.css', './assets/css/activity-heatmap.css',
   './assets/js/core.js', './assets/js/gamification.js', './assets/js/navigation.js', './assets/js/dashboard.js',
   './assets/js/bible-reader.js', './assets/js/faith.js', './assets/js/gym.js', './assets/js/discipline.js',
   './assets/js/habits.js', './assets/js/nutrition.js', './assets/js/recovery.js', './assets/js/planner.js', './assets/js/journal.js',
-  './assets/js/insights.js', './assets/js/records.js', './assets/js/backup.js', './assets/js/suite.js', './assets/js/app.js'
+  './assets/js/insights.js', './assets/js/records.js', './assets/js/contributions.js', './assets/js/backup.js', './assets/js/suite.js', './assets/js/app.js'
 ];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_FILES)));

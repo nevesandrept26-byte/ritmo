@@ -34,5 +34,32 @@ for (const file of ['package.json', 'manifest.webmanifest']) {
     process.stderr.write(`[ERRO] JSON ${file}: ${error.message}\n`);
   }
 }
+
+// Verificações estáticas da estrutura HTML principal.
+const html = fs.readFileSync('index.html', 'utf8');
+const ids = [...html.matchAll(/\sid=["']([^"']+)["']/g)].map(match => match[1]);
+const duplicates = ids.filter((id, index) => ids.indexOf(id) !== index);
+if (duplicates.length) {
+  failed = true;
+  process.stderr.write(`[ERRO] IDs HTML duplicados: ${[...new Set(duplicates)].join(', ')}\n`);
+} else {
+  process.stdout.write(`[OK] HTML: ${ids.length} IDs sem duplicações\n`);
+}
+const pages = [...html.matchAll(/<section\b[^>]*class=["'][^"']*\bpage\b[^"']*["'][^>]*id=["']page-([^"']+)["']/g)].map(match => match[1]);
+if (pages.length !== 13) {
+  failed = true;
+  process.stderr.write(`[ERRO] Esperadas 13 áreas principais; encontradas ${pages.length}.\n`);
+} else {
+  process.stdout.write(`[OK] HTML: 13 áreas principais\n`);
+}
+const contributions = fs.readFileSync('assets/js/contributions.js', 'utf8');
+for (const page of pages) {
+  if (!new RegExp(`^\\s*${page}:\\s*\\{`, 'm').test(contributions)) {
+    failed = true;
+    process.stderr.write(`[ERRO] Falta a grelha de atividade da área "${page}".\n`);
+  }
+}
+if (!failed) process.stdout.write('[OK] Grelhas de atividade: configuração presente para todas as áreas\n');
+
 if (failed) process.exit(1);
 process.stdout.write(`\nVerificação concluída: ${files.length} ficheiros JavaScript validados.\n`);

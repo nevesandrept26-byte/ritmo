@@ -254,7 +254,40 @@ async function analyzeFoodImage(input) {
   return validateFoodAnalysis(parsed);
 }
 
+async function explainBibleVerse(input) {
+  const health = await getOllamaHealth();
+  if (!health.ollamaConnected) throw Object.assign(new Error('O Ollama não está ligado. Abre a aplicação Ollama e tenta novamente.'), {status:503});
+  if (!health.modelInstalled) throw Object.assign(new Error(`O modelo ${OLLAMA_MODEL} não está instalado. Confirma com “ollama list”.`), {status:409});
+  const reference = String(input.reference || '').trim().slice(0,120);
+  const verse = String(input.verse || '').trim().slice(0,1600);
+  const previous = String(input.previous || '').trim().slice(0,1200);
+  const next = String(input.next || '').trim().slice(0,1200);
+  if (!reference || !verse) throw Object.assign(new Error('Falta a referência ou o texto do versículo.'), {status:400});
+  const prompt = `Explica o versículo bíblico indicado, em português europeu claro e acessível.\n\nREFERÊNCIA: ${reference}\nTEXTO DO VERSÍCULO: ${verse}\nVERSÍCULO ANTERIOR: ${previous || '(não fornecido)'}\nVERSÍCULO SEGUINTE: ${next || '(não fornecido)'}\n\nOrganiza a resposta nestas secções curtas:\nCONTEXTO: situa o versículo no parágrafo/capítulo e identifica quem fala e a quem, apenas quando o texto permite concluir isso.\nSENTIDO: explica a ideia central, frase a frase, e esclarece expressões ou palavras difíceis.\nPORQUE PODE SER DIFÍCIL: explica metáforas, costumes, género literário, contexto histórico ou questões teológicas relevantes, se forem realmente pertinentes.\nLEITURAS E CUIDADOS: quando existirem interpretações cristãs relevantes diferentes, apresenta-as de forma justa e diz o que o texto não permite afirmar com segurança. Não inventes consenso nem factos históricos.\nEM POUCAS PALAVRAS: resume o sentido do versículo em linguagem simples.\n\nRegras: não transformes poesia em afirmação literal sem explicar o género; não retires o versículo do contexto; distingue o texto bíblico da interpretação; não apresentes uma tradição denominacional como a única possível; não inventes detalhes. Se o versículo for direto e não tiver dificuldade especial, diz isso e explica-o brevemente. Evita uma aplicação moralista automática. Mantém a resposta entre 120 e 260 palavras.`;
+  const response = await ollamaFetch('/api/chat', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      model:OLLAMA_MODEL,stream:false,think:false,keep_alive:'10m',
+      options:{temperature:0.2,num_predict:800},
+      messages:[
+        {role:'system',content:'És um assistente de estudo bíblico cuidadoso. Explicas texto, contexto e interpretações sem reivindicar autoridade religiosa. Escreve em português europeu. Se não souberes, assume a incerteza.'},
+        {role:'user',content:prompt}
+      ]
+    })
+  }, 180_000);
+  const payload = await response.json().catch(()=>({}));
+  if (!response.ok) throw Object.assign(new Error(payload.error || `O Ollama respondeu com HTTP ${response.status}.`), {status:502});
+  const explanation = String(payload?.message?.content || '').trim();
+  if (!explanation) throw Object.assign(new Error('O modelo não devolveu uma explicação de texto. Tenta novamente.'), {status:502});
+  return {ok:true,reference,explanation,model:OLLAMA_MODEL,provider:'Ollama local'};
+}
+
 async function handleApi(req, res, url) {
+  if (req.method === 'POST' && url.pathname === '/api/bible/explain-verse') {
+    if (!isLocalRequest(req)) return sendJson(res,403,{error:'As explicações bíblicas só aceitam pedidos desta aplicação local.'});
+    try { return sendJson(res,200,await explainBibleVerse(await readJson(req, 16 * 1024))); }
+    catch (error) { return sendJson(res,error.status||502,{error:error.message||'Não foi possível explicar este versículo.'}); }
+  }
   if (req.method === 'POST' && url.pathname === '/api/assistant/chat') {
     if (!isLocalRequest(req)) return sendJson(res,403,{error:'O assistente local só aceita pedidos desta aplicação neste computador.'});
     try {

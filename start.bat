@@ -7,7 +7,7 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
-echo A iniciar o RITMO 4.0 em http://127.0.0.1:8000
+echo A iniciar o RITMO 4.1.1 em http://127.0.0.1:8000
 echo Mantem esta janela aberta enquanto utilizas a aplicacao.
 echo Para analisar fotografias localmente, instala e abre o Ollama.
 echo Se ja tens qwen3.5:4b instalado no Ollama, nao precisas de o descarregar novamente.

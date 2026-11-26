@@ -10,14 +10,14 @@ function todayMissions(){const d=today(),faith=data.faithDays[d]||{},nutrition=d
  {key:'personal',title:'Cumpre uma pequena promessa',desc:'Conclui um hábito ou escreve uma reflexão.',done:(data.habits||[]).some(h=>checks[h.id])||(data.journal||[]).some(x=>x.date===d),xp:10,icon:'✓'}
  ];return missions}
 function updateDailyMissionRewards(){const missions=todayMissions();missions.forEach(m=>{if(m.done)giveXP(`mission:${today()}:${m.key}`,m.xp,m.title)});if(missions.every(m=>m.done))giveXP(`mission:${today()}:complete`,15,'Missão diária completa')}
-function achievementList(){const totalWorkouts=data.workouts.length,totalReadings=data.bible.length,clean=Object.values(data.discipline||{}).filter(x=>x.clean).length,events=Object.values(data.gamification?.events||{}),prs=events.filter(x=>String(x.label||'').startsWith('Novo recorde')).length,habits=Object.values(data.habitChecks||{}).reduce((a,day)=>a+Object.values(day||{}).filter(Boolean).length,0),sleep=data.sleep?.length||0,xp=Number(data.gamification?.xp)||0,plan=Object.values(data.readingPlan?.completed||{}).filter(Boolean).length;
+function achievementList(){const totalWorkouts=data.workouts.length,totalReadings=Object.keys(data.bibleReader?.completed||{}).filter(k=>data.bibleReader.completed[k]).length,clean=Object.values(data.discipline||{}).filter(x=>x.clean).length,events=Object.values(data.gamification?.events||{}),prs=events.filter(x=>String(x.label||'').startsWith('Novo recorde')).length,habits=Object.values(data.habitChecks||{}).reduce((a,day)=>a+Object.values(day||{}).filter(Boolean).length,0),sleep=data.sleep?.length||0,xp=Number(data.gamification?.xp)||0;
  const rows=[
   {icon:'🌱',name:'Primeiro passo',desc:'Regista o primeiro treino.',value:totalWorkouts,goal:1},
   {icon:'🏋️',name:'A ganhar ritmo',desc:'Regista 10 sessões de treino.',value:totalWorkouts,goal:10},
   {icon:'🔥',name:'Presença constante',desc:'Regista 25 sessões de treino.',value:totalWorkouts,goal:25},
-  {icon:'📖',name:'À procura de sabedoria',desc:'Regista a primeira leitura bíblica.',value:totalReadings,goal:1},
-  {icon:'🕊️',name:'Raízes profundas',desc:'Regista 10 leituras bíblicas.',value:totalReadings,goal:10},
-  {icon:'📚',name:'Plano em andamento',desc:'Conclui 7 dias do plano bíblico.',value:plan,goal:7},
+  {icon:'📖',name:'À procura de sabedoria',desc:'Marca o primeiro capítulo bíblico como lido.',value:totalReadings,goal:1},
+  {icon:'🕊️',name:'Raízes profundas',desc:'Marca 10 capítulos bíblicos como lidos.',value:totalReadings,goal:10},
+  {icon:'📚',name:'Primeiros capítulos',desc:'Marca 25 capítulos como lidos na Bíblia completa.',value:totalReadings,goal:25},
   {icon:'💎',name:'Novo recorde',desc:'Melhora um recorde pessoal num exercício.',value:prs,goal:1},
   {icon:'◎',name:'Uma semana de compromisso',desc:'Regista 7 dias sem lust concluídos.',value:clean,goal:7},
   {icon:'🌿',name:'Disciplina com raízes',desc:'Regista 30 dias concluídos.',value:clean,goal:30},

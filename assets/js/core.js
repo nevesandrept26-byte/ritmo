@@ -3,8 +3,7 @@
 const STORAGE_KEY='ritmo_personal_dashboard_v2';
 const GROUPS=['Peito','Costas','Pernas','Braços','Peito e Costas','Ombros','Abdominais','Full body','Outro'];
 const VERSES=[['“Confia no Senhor de todo o teu coração.”','Provérbios 3:5'],['“O Senhor é a minha força e o meu escudo.”','Salmos 28:7'],['“Tudo posso naquele que me fortalece.”','Filipenses 4:13'],['“O Senhor é bom, uma fortaleza no dia da angústia.”','Naum 1:7'],['“Aquietai-vos e sabei que eu sou Deus.”','Salmos 46:10'],['“Buscai primeiro o Reino de Deus.”','Mateus 6:33'],['“Sede fortes e corajosos. Não temais.”','Deuteronómio 31:6'],['“O amor é paciente, o amor é bondoso.”','1 Coríntios 13:4'],['“Entrega o teu caminho ao Senhor; confia nele.”','Salmos 37:5']];
-const READING_PLAN=['Marcos 1:1-20','Marcos 1:21-45','Marcos 2:1-17','Marcos 2:18-28','Marcos 3:1-19','Marcos 3:20-35','Marcos 4:1-20','Marcos 4:21-41','Marcos 5:1-20','Marcos 5:21-43','Marcos 6:1-29','Marcos 6:30-56','Marcos 7:1-23','Marcos 7:24-37','Marcos 8:1-21','Marcos 8:22-38','Marcos 9:1-29','Marcos 9:30-50','Marcos 10:1-31','Marcos 10:32-52','Marcos 11:1-25','Marcos 11:27–12:17','Marcos 12:18-44','Marcos 13:1-23','Marcos 13:24-37','Marcos 14:1-31','Marcos 14:32-72','Marcos 15:1-32','Marcos 15:33-47','Marcos 16:1-20'];
-const EMPTY={workouts:[],bible:[],prayers:[],faithDays:{},requests:[],favorites:[],readingPlan:{completed:{}},bibleReader:{completed:{},favorites:[],lastBook:'gn',lastChapter:1},exerciseRankThresholds:{},discipline:{},habits:[],habitChecks:{},nutrition:{},weights:[],measurements:[],sleep:[],recoveryDays:{},planner:{},gymTemplates:[],savedFoods:[],mealPresets:[],journal:[],goals:[],weeklyReflection:{text:'',improve:''},recipes:[],mealPlans:{},bibleJourney:null,assistant:{messages:[]},meta:{},gamification:{xp:0,events:{},areaXp:{faith:0,fitness:0,nutrition:0,discipline:0}},settings:{calories:0,protein:0,carbs:0,fat:0,water:0,theme:'dark',dashboardWidgets:{hero:true,stats:true,focus:true,daily:true,weekly:true,verse:true,goal:true},reminders:{enabled:false,prayer:'08:00',gym:'17:00',nutrition:'13:00',sleep:'22:00'}}};
+const EMPTY={workouts:[],bible:[],prayers:[],faithDays:{},requests:[],favorites:[],bibleReader:{completed:{},favorites:[],lastBook:'gn',lastChapter:1},exerciseRankThresholds:{},discipline:{},habits:[],habitChecks:{},nutrition:{},weights:[],measurements:[],sleep:[],recoveryDays:{},planner:{},gymTemplates:[],savedFoods:[],mealPresets:[],journal:[],goals:[],weeklyReflection:{text:'',improve:''},recipes:[],mealPlans:{},assistant:{messages:[]},meta:{},gamification:{xp:0,events:{},areaXp:{faith:0,fitness:0,nutrition:0,discipline:0}},settings:{calories:0,protein:0,carbs:0,fat:0,water:0,theme:'dark',dashboardWidgets:{hero:true,stats:true,focus:true,daily:true,weekly:true,verse:true,goal:true},reminders:{enabled:false,prayer:'08:00',gym:'17:00',nutrition:'13:00',sleep:'22:00'}}};
 function deepMerge(base,src){if(!src||typeof src!=='object')return base;for(const k of Object.keys(src)){if(src[k]&&typeof src[k]==='object'&&!Array.isArray(src[k])&&base[k]&&typeof base[k]==='object'&&!Array.isArray(base[k]))base[k]=deepMerge(base[k],src[k]);else base[k]=src[k]}return base}
 function loadData(){
   // Ordem de recuperação: dados principais → recuperação de gravação → backup diário → migração antiga.
@@ -18,7 +17,7 @@ function loadData(){
   }catch(e){}
   return structuredClone(EMPTY)
 }
-let data=loadData(),selectedGroups=[],calendarDate=new Date(),verseIndex=Math.floor(Date.now()/86400000)%VERSES.length,pendingXP=0;
+let data=loadData(),selectedGroups=[],verseIndex=Math.floor(Date.now()/86400000)%VERSES.length,pendingXP=0;
 function normalizeData(){
   if(!data||typeof data!=='object'||Array.isArray(data))data=structuredClone(EMPTY);
   ['workouts','bible','prayers','requests','favorites','habits','weights','measurements','sleep','gymTemplates','savedFoods','mealPresets','journal','goals','recipes'].forEach(k=>{if(!Array.isArray(data[k]))data[k]=[]});
@@ -34,6 +33,7 @@ function normalizeData(){
   if(!data.bibleReader||typeof data.bibleReader!=='object'||Array.isArray(data.bibleReader))data.bibleReader={completed:{},favorites:[],lastBook:'gn',lastChapter:1};
   data.bibleReader.completed=data.bibleReader.completed&&typeof data.bibleReader.completed==='object'?data.bibleReader.completed:{};
   data.bibleReader.favorites=Array.isArray(data.bibleReader.favorites)?data.bibleReader.favorites:[];
+  data.bibleReader.explanations=data.bibleReader.explanations&&typeof data.bibleReader.explanations==='object'&&!Array.isArray(data.bibleReader.explanations)?data.bibleReader.explanations:{};
   data.settings.theme=['dark','light','contrast'].includes(data.settings.theme)?data.settings.theme:'dark';
   data.settings.dashboardWidgets={...EMPTY.settings.dashboardWidgets,...(data.settings.dashboardWidgets&&typeof data.settings.dashboardWidgets==='object'?data.settings.dashboardWidgets:{})};
   data.settings.reminders={...EMPTY.settings.reminders,...(data.settings.reminders&&typeof data.settings.reminders==='object'?data.settings.reminders:{})};

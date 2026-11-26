@@ -1,6 +1,6 @@
-# RITMO 4.0.1 — aplicação pessoal de fé, fitness e disciplina
+# RITMO 4.1.1 — aplicação pessoal de fé, fitness e disciplina
 
-O RITMO é uma aplicação web local, organizada por módulos. A versão 4.0.1 acrescenta um assistente local com Ollama, pesquisa global, níveis separados por área, análise de força e volume, receitas, tendência nutricional, planeamento alimentar, plano de leitura bíblica de 90/180/365 dias, temas, dashboard personalizável, lembretes e proteção adicional do armazenamento. Os dados pessoais continuam exclusivamente no localStorage do navegador; não foi introduzida uma base de dados SQL.
+O RITMO é uma aplicação web local, organizada por módulos. A versão 4.1.1 acrescenta explicações bíblicas versículo a versículo, sob pedido através do Qwen/Ollama local, grelhas anuais de consistência em todos os separadores, registo de capítulos lidos diretamente na Bíblia completa, consistência alimentar diária e uma organização mais simples sem formulários de leitura ou planos duplicados. Inclui ainda um assistente local com Ollama, pesquisa global, níveis separados por área, análise de força e volume, receitas, tendência nutricional, planeamento alimentar, temas, dashboard personalizável, lembretes e proteção adicional do armazenamento. Os dados pessoais continuam exclusivamente no localStorage do navegador; não foi introduzida uma base de dados SQL.
 
 ## Estrutura
 
@@ -27,7 +27,8 @@ ritmo-project/
 │   │   ├── nutrition.css
 │   │   ├── gamification.css
 │   │   ├── planner-recovery.css
-│   │   └── suite.css
+│   │   ├── suite.css
+│   │   └── activity-heatmap.css
 │   ├── js/
 │   │   ├── core.js
 │   │   ├── gamification.js
@@ -45,6 +46,7 @@ ritmo-project/
 │   │   ├── insights.js
 │   │   ├── records.js
 │   │   ├── backup.js
+│   │   ├── contributions.js
 │   │   ├── suite.js
 │   │   └── app.js
 │   └── icons/ritmo.svg
@@ -98,6 +100,20 @@ A Open Food Facts documenta o endpoint legado `/cgi/search.pl` como a opção di
 - Almeida 1911 conserva grafia e construções antigas; o índice da fonte identifica a linguagem como pt-BR. O RITMO identifica a edição no leitor, em vez de a apresentar como uma tradução portuguesa contemporânea.
 - Fonte/contagem/licença: [índice de versões biblia.publica](https://github.com/Projeto-Euaggelion/biblia.publica/blob/main/docs/index.json), [estrutura JSON](https://github.com/Projeto-Euaggelion/biblia.publica/blob/main/docs/estrutura-arquivos/estrutura-json.md) e [licença Almeida 1911](https://github.com/Projeto-Euaggelion/biblia.publica/blob/main/versoes/alm1911/LICENSE.md).
 
+
+## Leitor bíblico e explicações versículo a versículo
+
+- A leitura e a marcação de capítulos estão concentradas na secção **Bíblia completa**; já não existe um formulário separado para registar leituras nem planos duplicados.
+- Cada capítulo pode ser marcado como lido diretamente no leitor. A seleção de capítulos assinala os que já foram concluídos e o progresso é calculado sobre os 1.189 capítulos.
+- Cada versículo tem uma ação **Explicar versículo**. Ao pedir uma explicação, o Qwen/Ollama local recebe o versículo e os versículos imediatamente anterior e seguinte, para o situar no contexto. A resposta distingue contexto, sentido, aspetos difíceis, interpretações relevantes e um resumo simples.
+- As explicações são geradas quando as pedes e ficam guardadas no localStorage para consulta posterior. É necessário ter o servidor RITMO e Ollama em execução. A IA pode cometer erros e não substitui comentário bíblico especializado; compara sempre a explicação com o contexto do capítulo e com a tua tradução/tradição de referência.
+
+## Grelhas anuais de atividade
+
+- Cada um dos 13 separadores apresenta uma grelha de atividade de estilo GitHub Contributions, com 53 semanas e dias individuais.
+- Ginásio: assinala os dias com treinos guardados. Disciplina: verde para dias sem lust concluídos e vermelho para dias registados como não concluídos. Nutrição: assinala explicitamente os dias em que cumpriste o objetivo alimentar. Caminho com Deus: capítulos bíblicos marcados como lidos, orações e gratidão. As restantes áreas mostram os respetivos registos.
+- A grelha é atualizada depois de guardares ou alterares um registo. Em ecrãs pequenos, podes deslocar a grelha horizontalmente.
+
 ## XP, missões e conquistas
 
 - Ganhas XP por registares ações consistentes: treino, leitura, oração, hábitos, nutrição, sono, objetivos e planeamento.
@@ -115,14 +131,14 @@ A Open Food Facts documenta o endpoint legado `/cgi/search.pl` como a opção di
 - Ao apagar os dados do navegador, podes perder os registos que não estejam num backup.
 
 
-## RITMO 4.0.1 — melhorias incluídas
+## RITMO 4.1.1 — melhorias incluídas
 
 - **Armazenamento:** mantém a chave `ritmo_personal_dashboard_v2` no `localStorage`; os registos das versões anteriores são carregados no mesmo perfil e endereço do navegador. O RITMO cria uma cópia de recuperação da gravação anterior e tenta guardar um snapshot local por dia quando o JSON principal tem até 350 KB e existe espaço suficiente. Os snapshots também ficam no `localStorage` e estão sujeitos aos limites do navegador. Exporta um ficheiro JSON regularmente para ter uma cópia fora do navegador.
 - **Assistente RITMO AI:** conversa com o modelo Ollama local `qwen3.5:4b`. Recebe apenas um resumo agregado das áreas relevantes, não o conteúdo integral do diário, orações privadas ou fotografias. Requer que Ollama e o servidor RITMO estejam abertos.
 - **Progressão por áreas:** XP e níveis independentes para Fé, Fitness, Nutrição e Disciplina. As missões recompensam consistência, sem retirar XP por falhar dias.
 - **Ginásio:** painel de volume dos últimos sete dias, comparação por grupo muscular, registos de força, recordes e força relativa baseada no último peso corporal registado.
-- **Nutrição:** receitas guardadas, adição de porções, média de calorias e proteína dos últimos sete dias e planeamento alimentar semanal. A média exclui dias sem registos.
-- **Caminho com Deus:** plano personalizável de 90, 180 ou 365 dias para percorrer os capítulos da Bíblia. O conteúdo bíblico é um recurso estático e é colocado em cache local (IndexedDB) para permitir leitura offline; os teus registos, favoritos e progresso pessoal continuam no `localStorage`.
+- **Nutrição:** receitas guardadas, adição de porções, média de calorias e proteína dos últimos sete dias e planeamento alimentar semanal e marcação diária do cumprimento do objetivo alimentar. A média exclui dias sem registos.
+- **Caminho com Deus:** leitor com os 66 livros da Bíblia, marcação de capítulos lidos, favoritos e explicações contextuais por versículo, geradas quando pedidas pelo Qwen/Ollama local. O texto bíblico é colocado em cache local (IndexedDB) para leitura offline; progresso, favoritos, explicações, orações e restantes registos continuam no `localStorage`.
 - **Pesquisa global:** pesquisa treinos, alimentos, leituras, objetivos, diário e receitas no navegador.
 - **Personalização:** temas escuro, claro e alto contraste; controlos para mostrar/ocultar widgets da página inicial.
 - **Lembretes:** notificações opcionais enquanto o RITMO está aberto e o navegador permite notificações. Não são notificações push garantidas quando a aplicação está fechada.
@@ -192,3 +208,12 @@ Esta versão corrige a interpretação da resposta do `qwen3.5:4b`: desativa o m
 No Windows: fecha a janela preta “RITMO Server” da versão anterior (Ctrl+C), extrai esta versão e executa o novo `start.bat`. Mantém o endereço `http://127.0.0.1:8000` para continuares a usar os mesmos dados locais do navegador. Não é necessário voltar a descarregar `qwen3.5:4b`.
 
 Se continuar a falhar, abre o CMD e executa `ollama --version`; confirma também `ollama list`. O RITMO escreve no terminal do servidor uma mensagem técnica resumida da primeira tentativa e da repetição, sem registar o conteúdo da fotografia.
+
+
+## RITMO 4.1.1 — Bíblia contextual e mapas de consistência
+
+- A leitura bíblica é concluída diretamente no leitor da Bíblia completa; removidos os dois planos de leitura e o formulário duplicado de registo manual de leituras.
+- Cada versículo tem uma ação para pedir uma explicação contextual através do Qwen/Ollama local. As explicações ficam guardadas no `localStorage` e podem ser geradas novamente.
+- Cada separador tem uma grelha anual de atividade, inspirada no GitHub Contributions, com cores de intensidade e tooltips por data. As grelhas refletem o respetivo tema: treino, leitura/or ação, disciplina, hábitos, nutrição, diário, sono, etc.
+- Na nutrição, é possível assinalar os dias em que se cumpriu o objetivo alimentar definido.
+- A grelha de disciplina distingue dias concluídos de dias assinalados como não concluídos.
